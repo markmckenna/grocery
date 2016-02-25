@@ -1,0 +1,119 @@
+description "Grocery app for Android"
+
+buildscript {
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath 'me.tatarka:gradle-retrolambda:3.2.3'
+    }
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'maven'
+apply plugin: 'me.tatarka.retrolambda'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile 'com.jakewharton:butterknife:7.0.1'
+
+    testCompile 'junit:junit:4.12'
+    testCompile "org.assertj:assertj-core:1.7.0"
+    testCompile 'org.mockito:mockito-core:1.10.19'
+    testCompile 'com.github.tomakehurst:wiremock:1.55:standalone'
+    testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
+    testCompile('org.robolectric:robolectric:3.0') {
+        exclude group: 'commons-logging', module: 'commons-logging'
+        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
+    }
+//    testCompile 'org.robolectric:shadows-support-v4:3.0'
+//    testCompile 'org.robolectric:shadows-play-services:3.0'
+
+    retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:2.0.6'
+}
+
+version gitVersion()
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 23
+        versionCode versionCodeFromVersion(project.version)
+        versionName project.version
+        consumerProguardFiles 'proguard-rules.pro'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildTypes.release {
+        testCoverageEnabled false
+        minifyEnabled true
+        shrinkResources true
+        zipAlignEnabled true
+    }
+
+    buildTypes.debug {
+        testCoverageEnabled false
+    }
+
+    buildTypes.release.proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+    lintOptions.abortOnError false
+    dexOptions.incremental true
+}
+
+
+retrolambda {
+    oldJdk retroLambdaJdk
+    javaVersion JavaVersion.VERSION_1_7
+}
+
+tasks.whenTaskAdded { task ->
+    if (task.name =~ /[Ll]int/) task.enabled = false
+}
+
+// Suppress no-window icons on OSX
+tasks.withType(JavaForkOptions) {
+    jvmArgs '-Djava.awt.headless=true'
+}
+
+
+String gitVersion() {
+    if (System.getProperty("os.name").toLowerCase().contains('windows'))
+        return 'cmd /c git describe'.execute().text.trim()
+    else
+        return 'git describe'.execute().text.trim()
+}
+
+int versionCodeFromVersion(String version) {
+    if (version.isEmpty()) return 0
+
+    def parts = version.split('-')
+    def numbers = parts[0].split('\\.')
+
+    def tagNumber = 0
+    if (parts.size() > 1) {
+        def tagparts = parts[1].split('\\.')
+        if (tagparts.size() > 1)
+            tagNumber = (tagparts[1] != null) ? tagparts[1].toInteger() : 0
+    }
+
+    int major = numbers[0].toInteger()
+    int minor = numbers[1].toInteger()
+    int patch = numbers[2].toInteger()
+
+    return major*1000000 + minor*10000 + patch*100 + tagNumber
+}
