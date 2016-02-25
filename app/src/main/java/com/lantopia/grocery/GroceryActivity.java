@@ -1,19 +1,14 @@
 package com.lantopia.grocery;
 
 import android.app.Activity;
-import android.os.Bundle;
+import android.widget.ListView;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.ViewById;
 
 /**
  * @author Mark McKenna &lt;mark.mckenna@redspace.com&gt;
  */
 @EActivity(R.layout.grocery_list)
 public class GroceryActivity extends Activity {
-    @Override protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override protected void onResume() {
-        super.onResume();
-    }
+    @ViewById(R.id.grocery_list_list) ListView groceryList;
 }
