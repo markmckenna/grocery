@@ -10,5 +10,6 @@
                  android:label="LanTopia Grocery"
                  android:theme="@android:style/Theme.Black.NoTitleBar"
                  android:icon="@android:drawable/btn_default">
+        <activity android:name=".GroceryActivity"/>
     </application>
 </manifest>
