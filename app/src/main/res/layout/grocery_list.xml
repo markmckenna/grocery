@@ -4,23 +4,24 @@
                 android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
-        android:id="@+id/grocery_list_title"
+        android:gravity="center_horizontal"
+        android:text="Grocery List"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"/>
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"/>
 
     <ListView
+        android:id="@+id/groceryList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/grocery_list_list"
-        android:layout_below="@+id/grocery_list_title"
+        android:layout_below="@id/title"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"/>
+        android:layout_alignParentEnd="true"/>
 </RelativeLayout>

@@ -10,6 +10,7 @@ gradle-app.setting
 # Cache of project
 .gradletasknamecache
 gradle.properties
+local.properties
 
 # IDEA
 .idea/*

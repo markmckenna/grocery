@@ -1,24 +1,25 @@
 description "Grocery app for Android"
 
 buildscript {
+    ext.kotlinVersion = '1.0.5-2'
+
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.0'
-        classpath 'me.tatarka:gradle-retrolambda:3.2.3'
+        classpath 'com.android.tools.build:gradle:2.2.3'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 
     repositories {
-        mavenCentral()
         jcenter()
     }
 }
 
+def androidAnnotationsVersion = '3.3.2'
+
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
-apply plugin: 'me.tatarka.retrolambda'
-
-
-def androidAnnotationsVersion = '3.3.2'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 
 repositories {
@@ -31,39 +32,37 @@ dependencies {
     apt "org.androidannotations:androidannotations:$androidAnnotationsVersion"
     compile "org.androidannotations:androidannotations-api:$androidAnnotationsVersion"
 
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
+
+    compile 'com.android.support:recyclerview-v7:23.1.1'
+
     testCompile 'junit:junit:4.12'
     testCompile "org.assertj:assertj-core:1.7.0"
     testCompile 'org.mockito:mockito-core:1.10.19'
-    testCompile 'com.github.tomakehurst:wiremock:1.55:standalone'
     testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
+
     testCompile('org.robolectric:robolectric:3.0') {
         exclude group: 'commons-logging', module: 'commons-logging'
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
     }
-//    testCompile 'org.robolectric:shadows-support-v4:3.0'
-//    testCompile 'org.robolectric:shadows-play-services:3.0'
-
-    retrolambdaConfig 'net.orfjackal.retrolambda:retrolambda:2.0.6'
 }
 
 version gitVersion()
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 17
         targetSdkVersion 23
         versionCode versionCodeFromVersion(project.version)
         versionName project.version
         consumerProguardFiles 'proguard-rules.pro'
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+    sourceSets.main.java.srcDirs += 'src/main/kotlin'
 
     buildTypes.release {
         testCoverageEnabled false
@@ -79,19 +78,16 @@ android {
     buildTypes.release.proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
     lintOptions.abortOnError false
-    dexOptions.incremental true
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
 }
 
 apt {
     arguments {
         androidManifestFile variant.outputs[0]?.processResources?.manifestFile
     }
-}
-
-
-retrolambda {
-    oldJdk retroLambdaJdk
-    javaVersion JavaVersion.VERSION_1_7
 }
 
 tasks.whenTaskAdded { task ->
