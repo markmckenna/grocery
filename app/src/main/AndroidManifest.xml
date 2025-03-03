@@ -11,11 +11,20 @@
                  android:theme="@android:style/Theme.Black.NoTitleBar"
                  android:icon="@android:drawable/btn_default">
 
-        <activity android:name="com.lantopia.Main"
+        <activity android:name="com.lantopia.grocery.GroceryList"
                   android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+            <intent-filter> <!-- TODO play with deep linking more... -->
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:scheme="https"
+                    android:host="groceries.lantopia.org/lists/"/>
             </intent-filter>
         </activity>
 

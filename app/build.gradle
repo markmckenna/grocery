@@ -1,64 +1,52 @@
 description "Grocery app for Android"
 
 buildscript {
-    ext.kotlinVersion = '1.0.5-2'
+    ext.kotlinVersion = '1.3.61'
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
+        classpath 'com.android.tools.build:gradle:3.5.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 
     repositories {
         jcenter()
+        google()
     }
 }
 
-def androidAnnotationsVersion = '3.3.2'
-
 apply plugin: 'com.android.application'
-apply plugin: 'android-apt'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-
 repositories {
-    mavenCentral()
+    google()
     jcenter()
 }
 
 
 dependencies {
-    apt "org.androidannotations:androidannotations:$androidAnnotationsVersion"
-    compile "org.androidannotations:androidannotations-api:$androidAnnotationsVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation "androidx.constraintlayout:constraintlayout:2.0.0-beta3"
+    implementation "androidx.recyclerview:recyclerview:1.1.0"
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
-
-    compile 'com.android.support:recyclerview-v7:23.1.1'
-
-    testCompile 'junit:junit:4.12'
-    testCompile "org.assertj:assertj-core:1.7.0"
-    testCompile 'org.mockito:mockito-core:1.10.19'
-    testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
-
-    testCompile('org.robolectric:robolectric:3.0') {
-        exclude group: 'commons-logging', module: 'commons-logging'
-        exclude group: 'org.apache.httpcomponents', module: 'httpclient'
-    }
+    testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.assertj:assertj-core:3.14.0'
+    testImplementation 'org.mockito:mockito-core:2.23.0'
+    testImplementation 'org.hamcrest:hamcrest-junit:2.0.0.0'
 }
 
-version gitVersion()
+version "1.0"
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
 
     defaultConfig {
-        minSdkVersion 17
-        targetSdkVersion 23
-        versionCode versionCodeFromVersion(project.version)
-        versionName project.version
+        minSdkVersion 23
+        targetSdkVersion 29
+        versionCode 1
+        versionName version
         consumerProguardFiles 'proguard-rules.pro'
     }
 
@@ -84,12 +72,6 @@ android {
     }
 }
 
-apt {
-    arguments {
-        androidManifestFile variant.outputs[0]?.processResources?.manifestFile
-    }
-}
-
 tasks.whenTaskAdded { task ->
     if (task.name =~ /[Ll]int/) task.enabled = false
 }
@@ -97,32 +79,4 @@ tasks.whenTaskAdded { task ->
 // Suppress no-window icons on OSX
 tasks.withType(JavaForkOptions) {
     jvmArgs '-Djava.awt.headless=true'
-}
-
-
-String gitVersion() {
-    if (System.getProperty("os.name").toLowerCase().contains('windows'))
-        return 'cmd /c git describe'.execute().text.trim()
-    else
-        return 'git describe'.execute().text.trim()
-}
-
-int versionCodeFromVersion(String version) {
-    if (version.isEmpty()) return 0
-
-    def parts = version.split('-')
-    def numbers = parts[0].split('\\.')
-
-    def tagNumber = 0
-    if (parts.size() > 1) {
-        def tagparts = parts[1].split('\\.')
-        if (tagparts.size() > 1)
-            tagNumber = (tagparts[1] != null) ? tagparts[1].toInteger() : 0
-    }
-
-    int major = numbers[0].toInteger()
-    int minor = numbers[1].toInteger()
-    int patch = numbers[2].toInteger()
-
-    return major*1000000 + minor*10000 + patch*100 + tagNumber
 }
